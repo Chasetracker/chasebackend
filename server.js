@@ -36,16 +36,17 @@ app.get('/', (req, res) => {
 const mongoURL = process.env.MONGODB_URL
 
 // const port = 5000;
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 mongoose.set("strictQuery", true);
 
+
 mongoose.connect(mongoURL)
     .then(() => {
-    
+        console.log('MongoDB connected');
     })
-    .catch((err) => {
-        console.error('MongoDB connection error:', err);
+    .catch(err => {
+        console.error('MongoDB connection error:', err.message);
     });
 
 
