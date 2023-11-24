@@ -1,5 +1,8 @@
+const crypto = require("crypto");
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema
+const {Token} = require('./token');
+
 
 const userSchema = Schema({
     business_name: {
@@ -18,13 +21,17 @@ const userSchema = Schema({
         type: String,
         required: [true, " password is required"],
         minlength: [8, "minimum password length is 8"],
-
+    },
+    isVerified: {
+      type: Boolean,
+      required: true,
+      default: false
     },
     image: {
         type: String
     },
 
-    data: {
+    date: {
         type: Date,
         default: Date.now()
     }
@@ -36,6 +43,17 @@ userSchema.methods.generateAuthToken = async () => {
 
     return token
 }
+
+
+userSchema.methods.generateVerificationToken = function() {
+  let payload = {
+      userId: this._id,
+      token: crypto.randomInt(0, 9999).toString().padStart(4, 10)
+  };
+
+  return new Token(payload);
+};
+
 
 
 const User = mongoose.model("User", userSchema)
