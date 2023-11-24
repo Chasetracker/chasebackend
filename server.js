@@ -53,22 +53,14 @@ const PORT = process.env.PORT || 8000;
 
 mongoose.set("strictQuery", true);
 
-// mongoose.connect(mongoURL)
-//     .then(() => {
-//         console.log('MongoDB connected successfully');
-//     })
-//     .catch((err) => {
-//         console.error('MongoDB connection error:', err);
-//     });
 
-
-mongoose.connect(mongoURL, {
-    useNewUrlParser: true, useUnifiedTopology: true
-}).then(() => {
-}).catch((err) => {
-    console.log(err.message + "000 errrrror")
-})
-
+mongoose.connect(mongoURL)
+    .then(() => {
+        console.log('MongoDB connected');
+    })
+    .catch(err => {
+        console.error('MongoDB connection error:', err.message);
+    });
 
 
 app.listen(PORT, () => {
