@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema
-const {Token} = require('./token');
+const { Token } = require('./token');
 
 
 const userSchema = Schema({
@@ -23,9 +23,9 @@ const userSchema = Schema({
         minlength: [8, "minimum password length is 8"],
     },
     isVerified: {
-      type: Boolean,
-      required: true,
-      default: false
+        type: Boolean,
+        required: true,
+        default: false
     },
     image: {
         type: String
@@ -45,13 +45,13 @@ userSchema.methods.generateAuthToken = async () => {
 }
 
 
-userSchema.methods.generateVerificationToken = function() {
-  let payload = {
-      userId: this._id,
-      token: crypto.randomInt(0, 9999).toString().padStart(4, 10)
-  };
+userSchema.methods.generateVerificationToken = function () {
+    let payload = {
+        userId: this._id,
+        token: crypto.randomInt(0, 9999).toString().padStart(4, 10)
+    };
 
-  return new Token(payload);
+    return new Token(payload);
 };
 
 

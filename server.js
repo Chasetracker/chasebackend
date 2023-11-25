@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const { application } = require('express');
 const user = require('./routes/user').router
-// const generateData = require('./routes/generate').router
+const invoiceRecord = require('./routes/invoices').router
 // const getGenerateUSer = require('./routes/generate').router
 
 require('dotenv').config()
@@ -20,7 +20,7 @@ app.use(cors())
 
 //test api  at /api/user/text
 app.use("/api/user", user);
-// app.use('/api/user', generateData)
+app.use('/api', invoiceRecord)
 // app.use('./app/user', getGenerateUSer)
 
 //to test nodejs app
