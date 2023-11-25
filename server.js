@@ -11,16 +11,12 @@ require('dotenv').config()
 
 const app = express()
 app.use(bodyParser.json());
+app.use(cors())
 
 // adding course
 // checkng server
 
-const corsOptions = {
-    origin: process.env.FRONTEND_URL,
-    credentials: true,            //access-control-allow-credentials:true
-    optionSuccessStatus: 200
-}
-app.use(cors(corsOptions));
+
 
 //test api  at /api/user/text
 app.use("/api/user", user);
