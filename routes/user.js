@@ -7,10 +7,9 @@ const { login, signUp, verifyEmail, getAllCustomers, getSingleCustomer} = requir
 const router = express.Router();
 
 
+router.get('/getCustomers', getAllCustomers);
 
 router.get('/:id', getSingleCustomer);
-
-router.get('/getCustomers', getAllCustomers);
 
 //signup at /api/user/signup
 router.post('/signup', signUp);
