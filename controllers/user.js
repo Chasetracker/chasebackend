@@ -9,6 +9,32 @@ const {sendVerificationMail} = require("../email_Handler/sendVerificationMailTok
 
 require('dotenv').config();
 
+const getAllCustomers = async (req, res) => {
+  const queryObj = {};
+  const page = Number(req.query.page) || 1;
+  console.log("queryobl",queryObj);
+  const users = await User.find({...queryObj }).select(
+    "-password"
+  );
+
+  res.status(200).json({
+    result: users.length,
+    users
+  });
+};
+
+const getSingleCustomer = async (req, res) => {
+  const user = await User.findById({ _id: req.params.id }).select(
+    "-password"
+  );
+  if (!user) {
+    throw new CustomError.NotFoundError("User not found");
+  }
+  res.status(200).json({
+    user,
+  });
+};
+
 const signUp = async (req, res) => {
     // get user validate input
     const { business_name, email, password } = req.body;
@@ -50,7 +76,7 @@ const signUp = async (req, res) => {
             res.status(201).json({
                 user,
                 token,
-                message: "User created successfully",
+                message: "User created successfully. Please verification code has been sent to your email...",
                 status_code: 201
             })
         }
@@ -139,4 +165,4 @@ const login = async (req, res) => {
 
 }
 
-module.exports = { login, signUp, verifyEmail}
+module.exports = { login, signUp, verifyEmail, getAllCustomers, getSingleCustomer}
