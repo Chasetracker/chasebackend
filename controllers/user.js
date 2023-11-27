@@ -1,8 +1,10 @@
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const {User}  = require("../models/User");
 const {Token} = require("../models/token");
 const jwt = require("jsonwebtoken");
-const {sendVerificationMail} = require("../email_Handler/sendVerificationMailToken")
+const assert = require("assert").strict;
+const {sendVerificationMail, resendVerificationTokenEmail } = require("../email_Handler/sendVerificationMailToken")
 
 // const cloudinary = require('cloudinary').v2;
 // const { response } = require("express")
@@ -93,36 +95,64 @@ const signUp = async (req, res) => {
 
 const verifyEmail = async (req, res) => {
 
-  if(!req.params.token) return res.status(400).json({message: "We were unable to find a user for this token."});
+    if(!req.params.token) return res.status(400).json({message: "We were unable to find a user for this token."});
 
-  try {
-      // Find a matching token
-      const token = await Token.findOne({ token: req.params.token });
+    try {
+        // Find a matching token
+        const token = await Token.findOne({ token: req.params.token });
 
-      if (!token) return res.status(400).json({ message: 'We were unable to find a valid token. Your token might have expired.' });
+        if (!token) return res.status(400).json({ message: 'We were unable to find a valid token. Your token might have expired.' });
 
-      // If we found a token, find a matching user
-      const user = await User.findOne({  _id: req.params.id })
+        // If we found a token, find a matching user
+        const user = await User.findOne({  _id: req.params.id })
 
-        if (!user) return res.status(400).json({ message: 'We were unable to find a user for this token.' });
+          if (!user) return res.status(400).json({ message: 'We were unable to find a user for this token.' });
 
-        if (user.isVerified) return res.status(400).json({ message: 'This user has already been verified.' });
+          if (user.isVerified) return res.status(400).json({ message: 'This user has already been verified.' });
 
-        // Verify and save the user
-        user.isVerified = true;
+          // Verify and save the user
+          user.isVerified = true;
 
-        user
-        .save()
-        .then(() =>{
-            res.status(200).send("You account has been verified. Please proceed login.");
-        }).catch((error)=> {
-          return res.status(500).json({message:error.message});
-      });
+          user
+          .save()
+          .then(() =>{
+              res.status(200).send("You account has been verified. Please proceed login.");
+          }).catch((error)=> {
+            return res.status(500).json({message:error.message});
+        });
 
-  } catch (error) {
+        // await Token.findByIdAndRemove(token._id);
+
+    } catch (error) {
+        res.status(500).json({message: error.message})
+    }
+  }
+
+const resendVerificationToken = async (req, res) => {
+    try{
+
+      const { email} = req.body;
+      const user = await User.findOne({email});
+      if(!user) return res.status(400).json({ message: 'We were unable to find a user with Email.'});
+
+      if (user.isVerified) return res.status(400).json({ message: 'This user has already been verified. Please proceed to login' });
+
+      const token = new Token({
+        userId: user._id,
+        token: crypto.randomInt(0, 9999).toString().padStart(4, 10)
+      })
+      await token.save();
+
+      sendVerificationMail(token);
+
+      res.status(201).json({
+        message: " Please verification code has been sent to your email...",
+        status_code: 200
+    })
+    }catch (error) {
       res.status(500).json({message: error.message})
-  }
-  }
+    }
+}
 
 const login = async (req, res) => {
     const { email, password } = req.body
@@ -165,4 +195,11 @@ const login = async (req, res) => {
 
 }
 
-module.exports = { login, signUp, verifyEmail, getAllCustomers, getSingleCustomer}
+module.exports = { 
+  login, 
+  signUp, 
+  verifyEmail, 
+  getAllCustomers, 
+  getSingleCustomer, 
+  resendVerificationToken
+}

@@ -1,14 +1,10 @@
 const {sendEmail} = require("./sendEmail")
 
 
-
-
 const sendVerificationMail = async (user, emailUser) => {
     const transporter = sendEmail();
 
     const token = user.generateVerificationToken();
-
-    // Save the verification token
     await token.save();
 
     const mailOptions = {
@@ -46,7 +42,7 @@ const sendVerificationMail = async (user, emailUser) => {
         </div>
         </body>`
     };
-    
+  
     transporter.sendMail(mailOptions, (error, result) => {
         if (error){
         console.log(error)
