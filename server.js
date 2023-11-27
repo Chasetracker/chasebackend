@@ -5,6 +5,7 @@ const cors = require('cors');
 const { application } = require('express');
 const user = require('./routes/user').router
 const invoiceRecord = require('./routes/invoices').router
+const customers = require('./routes/customers').router
 // const getGenerateUSer = require('./routes/generate').router
 
 require('dotenv').config()
@@ -21,7 +22,7 @@ app.use(cors())
 //test api  at /api/user/text
 app.use("/api/user", user);
 app.use('/api', invoiceRecord)
-// app.use('./app/user', getGenerateUSer)
+app.use('/api', customers)
 
 //to test nodejs app
 app.get('/', (req, res) => {
